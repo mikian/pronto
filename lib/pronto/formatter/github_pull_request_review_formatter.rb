@@ -22,3 +22,5 @@ module Pronto
     end
   end
 end
+
+::Pronto::Formatter.register('github_pr_review', ::Pronto::Formatter::GithubPullRequestReviewFormatter)

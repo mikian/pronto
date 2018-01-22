@@ -26,3 +26,5 @@ module Pronto
     end
   end
 end
+
+::Pronto::Formatter.register('github_status', ::Pronto::Formatter::GithubStatusFormatter)
