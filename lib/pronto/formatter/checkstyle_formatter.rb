@@ -38,7 +38,7 @@ module Pronto
           REXML::Element.new('error', file).tap do |e|
             e.attributes['line'] = message.line.new_lineno if message.line
             e.attributes['severity'] = to_checkstyle_severity(message.level)
-            e.attributes['message'] = message.msg
+            e.attributes['message'] = config.message_format(self.class.name) % message.to_h
             e.attributes['source'] = 'com.puppycrawl.tools.checkstyle.pronto'
           end
         end
