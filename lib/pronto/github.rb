@@ -48,12 +48,17 @@ module Pronto
     def create_pull_request_review(comments)
       return if comments.empty?
 
+      too_many_body = <<~MESSAGE
+        Only first 30 violations has been posted.
+        Please run `pronto` locally with `bundle exec pronto run -c origin/master` to get all violations.
+      MESSAGE
+
       options = {
         accept: 'application/vnd.github.v3.diff+json', # https://developer.github.com/v3/pulls/reviews/#create-a-pull-request-review
         commit_id: pull_sha,
-        body: '',
+        body: comments.count > 30 ? too_many_body : '',
         event: 'COMMENT',
-        comments: comments.map do |c|
+        comments: comments.first(30).map do |c|
           { path: c.path, position: c.position, body: c.body }
         end
       }
