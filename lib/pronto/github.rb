@@ -49,13 +49,18 @@ module Pronto
       return if comments.empty?
 
       options = {
-        event: 'COMMENT',
         accept: 'application/vnd.github.v3.diff+json', # https://developer.github.com/v3/pulls/reviews/#create-a-pull-request-review
+        commit_id: pull_sha,
+        body: '',
+        event: 'COMMENT',
         comments: comments.map do |c|
           { path: c.path, position: c.position, body: c.body }
         end
       }
       client.create_pull_request_review(slug, pull_id, options)
+    rescue Octokit::BadGateway => e
+      @config.logger.log("Error raised and rescued: #{e}")
+      raise Pronto::Error, e.message
     end
 
     def create_commit_status(status)
