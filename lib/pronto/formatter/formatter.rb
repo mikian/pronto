@@ -12,8 +12,9 @@ module Pronto
 
     FORMATTERS = {
       'github' => GithubFormatter,
-      'github_status' => GithubStatusFormatter,
+      'github_check' => GithubCheckFormatter,
       'github_combined_status' => GithubCombinedStatusFormatter,
+      'github_status' => GithubStatusFormatter,
       'github_pr' => GithubPullRequestFormatter,
       'github_pr_review' => GithubPullRequestReviewFormatter,
       'gitlab' => GitlabFormatter,

@@ -61,6 +61,49 @@ module Pronto
                            description: status.description)
     end
 
+    def publish_check_run(check_run)
+      check_run_id = create_check_run(check_run.name, check_run.sha)
+
+      annotations_left = check_run.annotations.clone
+      while annotations_left.any?
+        annotations_to_publish = annotations_left.slice!(0, 50)
+        client.patch(
+          "repos/#{slug}/check-runs/#{check_run_id}",
+          {
+            accept: 'application/vnd.github.antiope-preview+json',
+            output: {
+              title: check_run.name,
+              summary: check_run.description,
+              annotations: annotations_to_publish
+            }
+          }
+        )
+      end
+
+      client.patch(
+        "repos/#{slug}/check-runs/#{check_run_id}",
+        {
+          accept: 'application/vnd.github.antiope-preview+json',
+          status: 'completed',
+          conclusion: check_run.conclusion,
+          completed_at: Time.now
+        }
+      )
+    end
+
+    def create_check_run(runner, sha)
+      response = client.post(
+        "repos/#{slug}/check-runs",
+        {
+          accept: 'application/vnd.github.antiope-preview+json',
+          name: "pronto/#{runner}",
+          head_sha: sha,
+          started_at: Time.now
+        }
+      )
+      response['id']
+    end
+
     private
 
     def create_pull_request_review(comments)
